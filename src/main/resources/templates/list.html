@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            background-color: azure;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .head {
+            padding: 2vh;
+            background-color: cornflowerblue;
+            color: white;
+            display: flex;
+            justify-content: center;
+        }
+        .center {
+            padding: 5vh 10vw;
+            display: flex;
+            flex-direction: column;
+            justify-items: start;
+            align-items: center;
+            height: 100%;
+        }
+        .bottom {
+            display: flex;
+            justify-content: end;
+            padding: 2vh 5vw;
+        }
+        .circle-button {
+            width: 4rem;
+            height: 4rem;
+            font-size: 3rem;
+            border-radius: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background-color: cornflowerblue;
+            border: 0;
+        }
+        .small-circle-button {
+            width: 2rem;
+            height: 2rem;
+            font-size: 0.9rem;
+            border-radius: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: gray;
+            background-color: azure;
+            border: 0;
+        }
+        .small-circle-button:hover {
+            background-color: lightblue;
+        }
+        .modal-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .modal-footer {
+            border: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: end;
+        }
+        .modal-header {
+            border: 0;
+        }
+        .modal-body {}
+        .btn-primary {
+            background-color: cornflowerblue;
+        }
+    </style>
+</head>
+<body>
+<div class="head">
+    <h1>
+        Wir brauchen...
+    </h1>
+</div>
+<div class="center">
+    <table class="table">
+        <thead>
+        <tr>
+            <th style="width: 80%">Name</th>
+            <th style="width: 20%">Menge</th>
+            <th style="width: 1rem"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${items}">
+            <td th:text="${item.name}">Name</td>
+            <td th:text="${item.amount}">Menge</td>
+            <td>
+                <button onclick="deleteItem(this)" th:attr="data-id=${item.id}" id="deleteButton" class="small-circle-button"> <i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Zur Liste Hinzufügen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="nameInput" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="nameInput" aria-label="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="amountInput" class="form-label">Menge</label>
+                        <input type="text" class="form-control" id="amountInput" aria-label="amount">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="save-button" type="button" class="btn btn-primary">Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="bottom">
+    <button type="button" class="circle-button" data-bs-toggle="modal" data-bs-target="#exampleModal">+</button>
+</div>
+<script>
+    document.getElementById('save-button').addEventListener('click', function() {
+        const name = document.getElementById('nameInput').value;
+        const amount = document.getElementById('amountInput').value;
+
+        if (!name || !amount) {
+            alert("Beide Felder befüllen");
+            return;
+        }
+
+        const data = {
+            name: name,
+            amount: amount
+        };
+
+        fetch('http://localhost:9011/db', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(data => {
+                var modalElement = document.getElementById('exampleModal');
+                var modal = bootstrap.Modal.getInstance(modalElement);
+                modal.hide();
+                location.reload();
+            })
+            .catch((error) => {
+            });
+    });
+    function deleteItem(button) {
+        const itemId = button.getAttribute('data-id');
+
+        fetch(`http://localhost:9011/db/${itemId}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                location.reload();
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+</body>
+</html>

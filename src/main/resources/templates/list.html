@@ -8,7 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         html, body {
-            height: 100%;
+            min-height: 100%;
+            max-height: 100%;
+            overflow: hidden;
             background-color: azure;
             display: flex;
             flex-direction: column;
@@ -28,6 +30,7 @@
             justify-items: start;
             align-items: center;
             height: 100%;
+            overflow: auto;
         }
         .bottom {
             display: flex;
@@ -161,6 +164,8 @@
                 var modalElement = document.getElementById('exampleModal');
                 var modal = bootstrap.Modal.getInstance(modalElement);
                 modal.hide();
+                document.getElementById('amountInput').value = "";
+                document.getElementById('nameInput').value = "";
                 location.reload();
             })
             .catch((error) => {

@@ -1,10 +1,35 @@
 services:
-  mariadb:
-    image: 'mariadb:latest'
+  db:
+    image: mariadb:latest
+    restart: always
     environment:
-      - 'MARIADB_DATABASE=rppt'
-      - 'MARIADB_PASSWORD=admin'
-      - 'MARIADB_ROOT_PASSWORD=verysecret'
-      - 'MARIADB_USER=myuser'
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: shop-list
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    networks:
+      - shop-network
     ports:
-      - '3306'
+      - "3306:3306"
+
+  java-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DB_URL: jdbc:mariadb://db:3306/shop-list
+      DB_USER: root
+      DB_PASSWORD: admin
+    ports:
+      - "9011:9011"
+    depends_on:
+      - db
+    networks:
+      - shop-network
+volumes:
+  db_data:
+
+networks:
+  shop-network:

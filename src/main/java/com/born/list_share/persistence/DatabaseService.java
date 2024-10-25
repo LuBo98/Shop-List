@@ -18,6 +18,7 @@ public class DatabaseService {
     private void connect() {
         if (connection == null) {
             String url = dbConfig.getUrl();
+            System.out.println("Connecting to " + url + " with username: " + dbConfig.getUsername() + " and password: " + dbConfig.getPassword());
             String username = dbConfig.getUsername();
             String password = dbConfig.getPassword();
 

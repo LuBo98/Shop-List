@@ -28,8 +28,11 @@ services:
       - db
     networks:
       - shop-network
+      - main
 volumes:
   db_data:
 
 networks:
   shop-network:
+  main:
+    external: true
